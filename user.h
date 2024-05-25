@@ -28,6 +28,7 @@ int toggle(void);
 int add(int, int); 
 int send(int, int, void *); 
 int recv(void *);
+int send_multi(int, void *, void *);
 
 // ulib.c
 int stat(const char*, struct stat*);

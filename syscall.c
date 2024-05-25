@@ -82,6 +82,22 @@ argstr(int n, char **pp)
   return fetchstr(addr, pp);
 }
 
+int 
+argintptr(int n, int **pp, int size)
+{
+  int i;
+  struct proc *curproc = myproc();
+
+  if (argint(n, &i) < 0) {
+    return -1;
+  }
+  if (size < 0 || (uint)i >= curproc->sz || (uint)i + size > curproc->sz) {
+    return -1;
+  }
+  *pp = (int*)i;
+  return 0;
+}
+
 extern int sys_chdir(void);
 extern int sys_close(void);
 extern int sys_dup(void);
@@ -108,7 +124,8 @@ extern int sys_toggle(void);
 extern int sys_add(void);
 extern int sys_ps(void);
 extern int sys_send(void);
-extern int sys_recv(void);
+extern int sys_recv (void);
+extern int sys_send_multi(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -138,6 +155,7 @@ static int (*syscalls[])(void) = {
 [SYS_ps]      sys_ps,
 [SYS_send]    sys_send,
 [SYS_recv]    sys_recv,
+[SYS_send_multi]  sys_send_multi,
 };
 
 int calls_count[syscall_len];

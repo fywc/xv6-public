@@ -244,3 +244,54 @@ sys_recv(void *msg)
   lock = 0;
   return 0;
 }
+
+int
+sys_send_multi(int sender_pid, void *rec_pid, void *msg, int len)
+{
+  char *message = (char *)msg;
+  argint(0, &sender_pid);
+  argptr(2, &message, MSGSIZE);
+  argint(3, &len);
+  int* rec_multi = (int *)rec_pid;
+  argintptr(1, &rec_multi,len);
+
+  while(lock > 0)
+  {
+
+  }
+  for(int i=0; i<len; ++i)
+  {
+    int loc = -1;
+    for(int j=0; j<buf_len; ++j)
+    {
+      if(send_arr[j] == 0)
+      {
+        loc = j;
+        break;
+      }
+    }
+
+    if(loc<0)
+    {
+      lock = 0;
+      return -1;
+    }
+
+    send_arr[loc] = sender_pid;
+    recv_arr[loc] = rec_multi[i];
+    for(int j=0; j<MSGSIZE; ++j)
+    {
+      if(*(message + j) == '\0')
+      {
+        msg_arr[loc][j] = '\0';
+        break;
+      }
+      else
+      {
+        msg_arr[loc][j] = *(message + j);
+      }
+    }
+  }
+  lock = 0;
+  return 0;
+}
