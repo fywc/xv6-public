@@ -11,7 +11,7 @@ msg_prep(int value, char *msg, int type) //Function to process the int and conve
   char *message = (char *)msg;
   int return_val = -1;
 
-  if(type == 0)
+  if(type == 0)   // 使用单线程算法
   {
     int temp = value;
     int index = 0;
@@ -24,7 +24,7 @@ msg_prep(int value, char *msg, int type) //Function to process the int and conve
     *(message+ index) = '\0';
     return_val = 0;
   }
-  else
+  else   // 使用多线程算法
   {
     value = 0;
     int index = 0;
