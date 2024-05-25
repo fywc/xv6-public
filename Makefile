@@ -185,9 +185,11 @@ UPROGS=\
 	_print_count\
 	_unicast\
 	_multicast\
+	_jacob\
+	_maekawa\
 
-fs.img: mkfs README $(UPROGS)
-	./mkfs fs.img README $(UPROGS)
+fs.img: mkfs README assig2a.inp assig2b.inp $(UPROGS)
+	./mkfs fs.img README assig2a.inp assig2b.inp $(UPROGS)
 
 -include *.d
 
@@ -255,6 +257,7 @@ EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	printf.c umalloc.c user_toggle.c print_count.c unicast.c multicast.c\
+	jacob.c maekawa.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 
