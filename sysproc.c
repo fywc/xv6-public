@@ -20,6 +20,12 @@ extern int calls_count[syscall_len];
 
 int toggle_on = 0;
 
+int send_arr[buf_len];
+int recv_arr[buf_len];
+char msg_arr[buf_len][MSGSIZE];
+
+int lock = 0;
+
 int
 sys_fork(void)
 {
@@ -148,5 +154,93 @@ int
 sys_ps(void)
 {
   print_pid();
+  return 0;
+}
+
+int 
+sys_send (int sender_pid, int receiver_pid, void* msg)
+{
+  while (lock > 0)
+  {
+
+  }
+
+  lock = 1;
+  char *message = (char *)msg;
+  argint(0, &sender_pid);
+  argint(1, &receiver_pid);
+  argptr(2, &message, MSGSIZE);
+  int loc = -1;
+  for(int i=0; i<buf_len; ++i)
+  {
+    if(send_arr[i] == 0)
+    {
+      loc = i;
+      break;
+    }
+  }
+  if(loc<0)
+  {
+    lock = 0;
+    return -1;
+  }
+  for(int i=0; i<MSGSIZE; ++i)
+  {
+    if(message[i] == '\0')
+    {
+      msg_arr[loc][i] = '\0';
+      break;
+    }
+    msg_arr[loc][i] = message[i];
+  }
+  send_arr[loc] = sender_pid;
+  recv_arr[loc] = receiver_pid;
+  //cprintf("%s %d %d %s\n", "SENDING PROCESS", send_arr[loc], recv_arr[loc], msg);
+  //cprintf("%s \n", "Done Sending");
+  lock = 0;
+  return 0;
+}
+
+int
+sys_recv(void *msg)
+{
+  char *message = (char *)msg;
+  argptr(0, &message, MSGSIZE);
+  int loc = -1;
+  int my_id = sys_getpid();
+  //cprintf("%s %d\n", "RECIVING PROCESS", my_id);
+  while(loc < 0)
+  {
+    for(int i=0; i<buf_len; ++i)
+    {
+      if(recv_arr[i] == my_id)
+      {
+        loc = i;
+        break;
+      }
+    }
+  }
+  if(loc<0)
+  {
+    lock = 0;
+    return -1;
+  }
+    while(lock > 0)
+  {
+
+  }
+  lock = 1;
+  for(int i=0; i<MSGSIZE; ++i)
+  {
+    if(msg_arr[loc][i] == '\0')
+    {
+      message[i] = '\0';
+      break;
+    }
+     message[i] = msg_arr[loc][i];
+  }
+  send_arr[loc] = 0;
+  recv_arr[loc] = 0;
+  lock = 0;
   return 0;
 }

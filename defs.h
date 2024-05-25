@@ -191,3 +191,5 @@ void            clearpteu(pde_t *pgdir, char *uva);
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
 
 #define syscall_len 29
+#define buf_len 20
+#define MSGSIZE 8
